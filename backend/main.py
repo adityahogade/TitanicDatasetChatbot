@@ -1,4 +1,3 @@
-# backend/main.py
 from fastapi import FastAPI
 from pydantic import BaseModel
 from backend.agent import csv_agent_func
@@ -22,6 +21,6 @@ def chat(query: Query):
         traceback.print_exc()
         return {
             "ok": False,
-            "answer": "⚠️ Backend error occurred.",
+            "answer": " Backend error occurred.",
             "error": str(e)
         }
