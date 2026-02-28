@@ -1,6 +1,6 @@
 # backend/agent.py
 import matplotlib
-matplotlib.use("Agg")
+matplotlib.use("Agg") 
 
 from langchain_experimental.agents import create_csv_agent
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -12,33 +12,13 @@ import uuid
 
 load_dotenv()
 
-# =========================
-# CONSTANTS
-# =========================
+CSV_PATH =  "backend/components/titanic.csv"
+PLOT_DIR = Path(__file__).parent.parent / "plots"
+PLOT_DIR.mkdir(exist_ok=True)
 
-# CSV is read-only → SAFE
-CSV_PATH = Path(__file__).parent / "components" / "titanic.csv"
-
-
-# =========================
-# TEMP PLOT DIRECTORY
-# (ONLY writable place on Vercel)
-# =========================
-def get_plot_dir() -> Path:
-    plot_dir = Path("/tmp/plots")
-    plot_dir.mkdir(parents=True, exist_ok=True)
-    return plot_dir
-
-
-# =========================
-# MAIN CSV AGENT FUNCTION
-# =========================
 def csv_agent_func(question: str):
-    plot_dir = get_plot_dir()
-    plot_name = f"{uuid.uuid4().hex}.png"
-    plot_path = plot_dir / plot_name
+    plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
 
-    # ---------- LLM SELECTION ----------
     try:
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
@@ -51,42 +31,46 @@ def csv_agent_func(question: str):
     if llm is None:
         llm = ChatOllama(model="llama3")
 
-    # ---------- CSV AGENT ----------
     agent = create_csv_agent(
         llm=llm,
         path=str(CSV_PATH),
         verbose=False,
         allow_dangerous_code=True,
-        handle_parsing_errors=True,
+        handle_parsing_errors=True, 
     )
 
-    # ---------- PROMPT ----------
     prompt = f"""
 {question}
 
-You are working inside a LangChain CSV agent analyzing the Titanic passenger dataset.
+You are working inside a LangChain CSV agent to analyze the Titanic passenger dataset.
+
+Your goal is to provide clear analytical insight about passengers and, when useful, visual insight.
 
 STRICT RULES (follow exactly):
 
-1. You may use pandas and matplotlib internally if useful.
-2. If a visualization helps understanding:
-   - generate an appropriate chart
-   - save it EXACTLY to this path:
+1. You may use pandas and matplotlib internally if needed to analyze passenger data.
+2. If a visualization helps to understand passenger patterns or distributions:
+   - generate an appropriate chart using pandas and matplotlib
+   - save the figure exactly to this path:
      {plot_path}
-   - do NOT display it
-3. NEVER include code blocks or formatting.
-4. NEVER mention file paths or image saving.
-5. Output must be plain text only.
+   - do NOT display the figure
+3. NEVER include code blocks, markdown, or explanations of code in your output.
+4. NEVER include bullet points, lists, or special formatting.
+5. NEVER mention file paths, filenames, or saving images.
+6. Your final response MUST be plain text only.
 
-Your response MUST start exactly with:
+Your final response MUST start exactly with:
 
 Final Answer:
+
+After "Final Answer:", clearly explain the passenger insight in natural language.
+Include important numbers such as counts, percentages, or averages.
+If a chart was generated, describe the visual insight it provides about passengers.
 """
 
     result = agent.invoke(prompt)
 
     return {
         "answer": result["output"],
-        # Logical path exposed to frontend (served from /tmp)
-        "plot": f"/plots/{plot_name}" if plot_path.exists() else None,
-    }
+        "plot": f"plots/{plot_path.name}" if plot_path.exists() else None
+        }

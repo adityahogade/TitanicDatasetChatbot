@@ -126,7 +126,7 @@ if send and question.strip():
     with st.spinner("Analyzing Titanic dataset..."):
         try:
             response = requests.post(
-                "http://localhost:8000/chat",
+                "https://titanic-dataset-chatbot-339w5j5kr-adityas-projects-1fcb2206.vercel.app/chat",
                 json={"question": question},
                 timeout=120
             )
