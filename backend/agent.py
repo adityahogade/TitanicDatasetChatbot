@@ -12,30 +12,33 @@ import uuid
 
 load_dotenv()
 
-# ✅ CSV is read-only → safe
+# =========================
+# CONSTANTS
+# =========================
+
+# CSV is read-only → SAFE
 CSV_PATH = Path(__file__).parent / "components" / "titanic.csv"
 
 
 # =========================
-# SAFE TEMP DIRECTORY
+# TEMP PLOT DIRECTORY
+# (ONLY writable place on Vercel)
 # =========================
 def get_plot_dir() -> Path:
-    """
-    Vercel allows writes ONLY inside /tmp
-    """
     plot_dir = Path("/tmp/plots")
     plot_dir.mkdir(parents=True, exist_ok=True)
     return plot_dir
 
 
 # =========================
-# MAIN AGENT FUNCTION
+# MAIN CSV AGENT FUNCTION
 # =========================
 def csv_agent_func(question: str):
     plot_dir = get_plot_dir()
-    plot_path = plot_dir / f"{uuid.uuid4().hex}.png"
+    plot_name = f"{uuid.uuid4().hex}.png"
+    plot_path = plot_dir / plot_name
 
-    # ---- LLM selection ----
+    # ---------- LLM SELECTION ----------
     try:
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
@@ -48,7 +51,7 @@ def csv_agent_func(question: str):
     if llm is None:
         llm = ChatOllama(model="llama3")
 
-    # ---- CSV Agent ----
+    # ---------- CSV AGENT ----------
     agent = create_csv_agent(
         llm=llm,
         path=str(CSV_PATH),
@@ -57,22 +60,23 @@ def csv_agent_func(question: str):
         handle_parsing_errors=True,
     )
 
+    # ---------- PROMPT ----------
     prompt = f"""
 {question}
 
-You are working inside a LangChain CSV agent to analyze the Titanic passenger dataset.
+You are working inside a LangChain CSV agent analyzing the Titanic passenger dataset.
 
 STRICT RULES (follow exactly):
 
-1. You may use pandas and matplotlib internally.
-2. If a visualization helps:
-   - generate a chart using pandas/matplotlib
+1. You may use pandas and matplotlib internally if useful.
+2. If a visualization helps understanding:
+   - generate an appropriate chart
    - save it EXACTLY to this path:
      {plot_path}
    - do NOT display it
-3. Do NOT include code blocks, markdown, or lists.
-4. Do NOT mention file paths or image saving.
-5. Output must be plain text.
+3. NEVER include code blocks or formatting.
+4. NEVER mention file paths or image saving.
+5. Output must be plain text only.
 
 Your response MUST start exactly with:
 
@@ -83,6 +87,6 @@ Final Answer:
 
     return {
         "answer": result["output"],
-        # Optional: frontend can fetch this if needed
-        "plot": str(plot_path) if plot_path.exists() else None,
+        # Logical path exposed to frontend (served from /tmp)
+        "plot": f"/plots/{plot_name}" if plot_path.exists() else None,
     }
