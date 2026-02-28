@@ -34,6 +34,8 @@ def fig_to_base64() -> str:
 # =========================
 # MAIN AGENT FUNCTION
 # =========================
+PLOT_DIR = Path(tempfile.gettempdir()) / "plots"
+PLOT_DIR.mkdir(parents=True, exist_ok=True)
 def csv_agent_func(question: str):
     # ---- LLM (Vercel-safe) ----
     plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
