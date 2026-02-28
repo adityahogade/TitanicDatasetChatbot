@@ -9,12 +9,16 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 import uuid
+from pathlib import Path
+import tempfile
 
 load_dotenv()
 
 CSV_PATH =  "backend/components/titanic.csv"
-PLOT_DIR = Path(__file__).parent.parent / "plots"
-PLOT_DIR.mkdir(exist_ok=True)
+
+
+PLOT_DIR = Path(tempfile.gettempdir()) / "plots"
+PLOT_DIR.mkdir(parents=True, exist_ok=True)
 
 def csv_agent_func(question: str):
     plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
