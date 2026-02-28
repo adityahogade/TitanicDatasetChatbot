@@ -57,18 +57,28 @@ def csv_agent_func(question: str):
 
 You are working inside a LangChain CSV agent to analyze the Titanic passenger dataset.
 
+Your goal is to provide clear analytical insight about passengers and, when useful, visual insight.
+
 STRICT RULES (follow exactly):
 
-1. You may use pandas and matplotlib internally.
-2. ALWAYS generate ONE appropriate visualization using matplotlib
-   if the question involves counts, comparisons, distributions, or groups.
-3. Do NOT display the plot.
-4. Do NOT mention code, file paths, or saving images.
-5. Output must be plain text only.
+1. You may use pandas and matplotlib internally if needed to analyze passenger data.
+2. If a visualization helps to understand passenger patterns or distributions:
+   - generate an appropriate chart using pandas and matplotlib
+   - save the figure exactly to this path:
+     {plot_path}
+   - do NOT display the figure
+3. NEVER include code blocks, markdown, or explanations of code in your output.
+4. NEVER include bullet points, lists, or special formatting.
+5. NEVER mention file paths, filenames, or saving images.
+6. Your final response MUST be plain text only.
 
 Your final response MUST start exactly with:
 
 Final Answer:
+
+After "Final Answer:", clearly explain the passenger insight in natural language.
+Include important numbers such as counts, percentages, or averages.
+If a chart was generated, describe the visual insight it provides about passengers.
 """
 
     # ---- Run Agent ----
