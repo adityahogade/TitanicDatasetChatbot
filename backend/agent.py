@@ -19,29 +19,21 @@ CSV_PATH = Path(__file__).parent / "components" / "titanic.csv"
 
 PLOT_DIR = Path(tempfile.gettempdir()) / "plots"
 PLOT_DIR.mkdir(parents=True, exist_ok=True)
-# agent.py (LLM section only)
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-import os
-
-def get_llm():
-    api_key = os.getenv("GOOGLE_API_KEY")
-
-    if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY not set in Vercel environment")
-
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0,
-        google_api_key=api_key,
-    )
 def csv_agent_func(question: str):
     plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
 
     try:
-        llm = get_llm()
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            temperature=0,
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+        )
     except Exception:
         llm = None
+
+    if llm is None:
+        llm = ChatOllama(model="llama3")
 
     agent = create_csv_agent(
         llm=llm,
