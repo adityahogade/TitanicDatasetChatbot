@@ -22,7 +22,7 @@ st.write(
 )
 
 # =========================
-# INPUT (FIXED LABEL WARNING)
+# INPUT
 # =========================
 question = st.text_input(
     "Ask a question about the Titanic dataset",
@@ -54,16 +54,21 @@ if submit and question.strip():
                 st.subheader("Answer")
                 st.write(data.get("answer", "No answer returned."))
 
-                # ---- Plot (if exists) ----
-                plot_path = data.get("plot")
-                if plot_path:
+                # ---- Visualization (BASE64 FIX) ----
+                plot_b64 = data.get("plot_base64")
+
+                if plot_b64:
                     st.subheader("Visualization")
                     st.image(
-                        f"https://titanic-dataset-chatbot.vercel.app{plot_path}",
+                        f"data:image/png;base64,{plot_b64}",
                         use_container_width=True
                     )
+                else:
+                    st.info("No visualization generated for this question.")
+
             else:
                 st.error(f"Backend error: {response.status_code}")
+                st.error(response.text)
 
         except requests.exceptions.RequestException as e:
             st.error("Could not connect to backend.")
