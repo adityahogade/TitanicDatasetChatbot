@@ -11,7 +11,7 @@ import os
 from dotenv import load_dotenv
 from langchain_experimental.agents import create_csv_agent
 from langchain_google_genai import ChatGoogleGenerativeAI
-import tempfile
+
 load_dotenv()
 
 # =========================
@@ -31,14 +31,10 @@ def fig_to_base64() -> str:
     return base64.b64encode(buffer.read()).decode("utf-8")
 
 
-# =========================
-# MAIN AGENT FUNCTION
-# =========================
-PLOT_DIR = Path(tempfile.gettempdir()) / "plots"
-PLOT_DIR.mkdir(parents=True, exist_ok=True)
+
 def csv_agent_func(question: str):
     # ---- LLM (Vercel-safe) ----
-    plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
+ 
 
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
@@ -69,7 +65,7 @@ STRICT RULES (follow exactly):
 2. If a visualization helps to understand passenger patterns or distributions:
    - generate an appropriate chart using pandas and matplotlib
    - save the figure exactly to this path:
-     {plot_path}
+  
    - do NOT display the figure
 3. NEVER include code blocks, markdown, or explanations of code in your output.
 4. NEVER include bullet points, lists, or special formatting.
