@@ -43,7 +43,7 @@ if submit and question.strip():
         try:
             response = requests.post(
                 BACKEND_URL,
-                params={"question": question},
+                json={"question": question},
                 timeout=120
             )
 
