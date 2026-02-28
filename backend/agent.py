@@ -4,7 +4,6 @@ matplotlib.use("Agg")
 
 from langchain_experimental.agents import create_csv_agent
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_ollama import ChatOllama
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -32,8 +31,7 @@ def csv_agent_func(question: str):
     except Exception:
         llm = None
 
-    if llm is None:
-        llm = ChatOllama(model="llama3")
+    
 
     agent = create_csv_agent(
         llm=llm,
