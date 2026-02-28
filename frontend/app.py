@@ -4,7 +4,7 @@ import requests
 # =========================
 # CONFIG
 # =========================
-BACKEND_URL = "https://titanic-dataset-chatbot.vercel.app/chat"
+BACKEND_URL = "http://127.0.0.1:8000/chat"
 
 st.set_page_config(
     page_title="Titanic CSV Chatbot",
@@ -59,7 +59,7 @@ if submit and question.strip():
                 if plot_path:
                     st.subheader("Visualization")
                     st.image(
-                        f"https://titanic-dataset-chatbot.vercel.app{plot_path}",
+                        f"http://127.0.0.1:8000{plot_path}",
                         use_container_width=True
                     )
             else:

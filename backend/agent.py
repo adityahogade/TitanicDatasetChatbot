@@ -14,7 +14,7 @@ import tempfile
 
 load_dotenv()
 
-CSV_PATH =  "backend/components/titanic.csv"
+CSV_PATH = Path(__file__).parent / "components" / "titanic.csv"
 
 
 PLOT_DIR = Path(tempfile.gettempdir()) / "plots"
