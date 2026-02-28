@@ -7,3 +7,4 @@ langchain-experimental
 langchain-google-genai
 python-dotenv
 tabulate
+tempfile
