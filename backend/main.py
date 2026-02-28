@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from agent import csv_agent_func
+from backend.agent import csv_agent_func
 import traceback
 
 app = FastAPI(title="Titanic Dataset Chatbot")
