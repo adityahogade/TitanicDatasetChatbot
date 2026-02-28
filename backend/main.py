@@ -1,6 +1,7 @@
+# backend/main.py
 from fastapi import FastAPI
 from pydantic import BaseModel
-from backend.agent import csv_agent_func
+from agent import csv_agent_func
 import traceback
 
 app = FastAPI(title="Titanic Dataset Chatbot")
@@ -21,6 +22,6 @@ def chat(query: Query):
         traceback.print_exc()
         return {
             "ok": False,
-            "answer": " Backend error occurred.",
+            "answer": "⚠️ Backend error occurred.",
             "error": str(e)
         }
