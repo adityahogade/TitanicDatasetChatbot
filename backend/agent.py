@@ -36,6 +36,8 @@ def fig_to_base64() -> str:
 # =========================
 def csv_agent_func(question: str):
     # ---- LLM (Vercel-safe) ----
+    plot_path = PLOT_DIR / f"{uuid.uuid4().hex}.png"
+
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         temperature=0,
